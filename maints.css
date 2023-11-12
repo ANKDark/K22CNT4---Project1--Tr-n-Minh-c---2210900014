@@ -1,0 +1,28 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.banner-container {
+  position: relative;
+  max-width: 800px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.banner {
+  display: none;
+  width: 100%;
+  height: 300px;
+  text-align: center;
+  color: #fff;
+}
+
+#banner1 { background-color: #3498db; }
+#banner2 { background-color: #2ecc71; }
+#banner3 { background-color: #e74c3c; }
+
+.banner.active {
+  display: block;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
