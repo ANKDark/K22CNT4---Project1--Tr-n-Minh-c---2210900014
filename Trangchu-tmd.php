@@ -1,3 +1,19 @@
+<?php
+include("ket-noi-tmd.php");
+
+$sql_select_sp_tmd = "SELECT * FROM sanpham_tmd WHERE 1=1";
+$result_moi_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_pb_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_km_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_bc_tmd = $conn_tmd->query($sql_select_sp_tmd);
+
+$sql_select_tmd = "";
+//Xử lý search
+if (isset($_GET['sub_srch_tmd'])) {
+    $keyword = mysqli_real_escape_string($conn_tmd, $_GET['timkiem_tmd']);
+    $sql_select_tmd .= " AND TENSP_TMD LIKE '%$keyword%'";
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,9 +21,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 1 - Trần Minh Đức - 2210900014</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css-tmd/main.css">
     <script src="script.js"></script>
-
 </head>
 
 <body>
@@ -54,9 +69,11 @@
             <div class="logo_search_menu_tmd">
                 <img src="Img/logo.jpg" alt="" class="logo_TMD">
                 <div class="srch_tmd">
-                    <input type="search" placeholder="Tìm kiếm...." name="timkiem_tmd">
-                    <input type="submit" name="sub_srch_tmd" value="Tìm kiếm">
+                    <form action="" method="get">
+                        <input type="search" placeholder="Tìm kiếm...." name="timkiem_tmd">
+                        <input type="submit" name="sub_srch_tmd" value="Tìm kiếm">
                 </div>
+                </form>
                 <div class="menu_tmd">
                     <a class="menu_link_tmd" href="#" title="Giỏ hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -74,7 +91,7 @@
                                 d="M3.5 1h.585A1.498 1.498 0 0 0 4 1.5V2a1.5 1.5 0 0 0 1.5 1.5h5A1.5 1.5 0 0 0 12 2v-.5c0-.175-.03-.344-.085-.5h.585A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1Z" />
                         </svg>
                     </a>
-                    <a class="menu_link_tmd" href="taikhoan_tmd.php" title="Đăng nhập">
+                    <a class="menu_link_tmd" href="login_tmd.php" title="Đăng nhập">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                             class="bi bi-person-fill" viewBox="0 0 16 16">
                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
@@ -135,10 +152,10 @@
     </div>
     <div class="banner_xh_tmd">
         <div class="xuhuong_gm_tmd">
-            <img src="Img/xh_gm.jpg" alt="">
+            <img style="width: 90%;" src="Img/xh_gm.jpg" alt="">
         </div>
         <div class="xuhuong_vp_tmd">
-            <img src="Img/xh_vp.jpg" alt="">
+            <img style="width: 90%;" src="Img/xh_vp.jpg" alt="">
         </div>
     </div>
     <div id="menu_sp_tmd">
@@ -149,7 +166,35 @@
             <button class="sp_tmd-btn" onclick="nextsp_tmd()">❯</button>
             <button class="sp_tmd-btn" onclick="prevsp_tmd()">❮</button>
             <div class="list_items_new_tmd">
-                <div class="list_item1_new_tmd" class="1nw">
+                <?php
+                if ($result_moi_tmd->num_rows > 0) {
+                    while ($row_tmd = $result_moi_tmd->fetch_assoc()) {
+                        if ($row_tmd['LOAI_SP'] == 'Sản phẩm mới') {
+                            echo '<div class="list_item1_new_tmd">';
+                            echo '<a href="#">';
+                            echo '<div class="img_new_tmd">';
+                            echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                            echo '</div>';
+                            echo '</a>';
+                            echo '<div class="box-item">';
+                            echo '<div class="them_gio_tmd">';
+                            echo '<a href="#">';
+                            echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
+                            echo '</a>';
+                            if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
+                                echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
+                            } else {
+                                echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
+                            }
+                            echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                            echo '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+                    }
+                }
+                ?>
+                <div class="list_item1_new_tmd">
                     <a href="#">
                         <div class="img_new_tmd">
                             <img src="Img/Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)-N.jpg"
@@ -266,6 +311,34 @@
             <h2>Sản phẩm bán chạy</h2>
         </button>
         <div class="list_items_pb_tmd">
+            <?php
+            if ($result_pb_tmd->num_rows > 0) {
+                while ($row_tmd = $result_pb_tmd->fetch_assoc()) {
+                    if ($row_tmd['LOAI_SP'] == 'Sản phẩm phổ biến') {
+                        echo '<div class="list_sp_tmd">';
+                        echo '<a href="#">';
+                        echo '<div class="img_sp_tmd">';
+                        echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '</div>';
+                        echo '</a>';
+                        echo '<div class="box-item">';
+                        echo '<div class="them_gio_tmd">';
+                        echo '<a href="#">';
+                        echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
+                        echo '</a>';
+                        if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
+                            echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
+                        } else {
+                            echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
+                        }
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                }
+            }
+            ?>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
@@ -447,6 +520,34 @@
 
 
         <div class="list_items_km_tmd">
+            <?php
+            if ($result_km_tmd->num_rows > 0) {
+                while ($row_tmd = $result_km_tmd->fetch_assoc()) {
+                    if ($row_tmd['LOAI_SP'] == 'Sản phẩm khuyến mãi') {
+                        echo '<div class="list_sp_tmd">';
+                        echo '<a href="#">';
+                        echo '<div class="img_sp_tmd">';
+                        echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '</div>';
+                        echo '</a>';
+                        echo '<div class="box-item">';
+                        echo '<div class="them_gio_tmd">';
+                        echo '<a href="#">';
+                        echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
+                        echo '</a>';
+                        if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
+                            echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
+                        } else {
+                            echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
+                        }
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                }
+            }
+            ?>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
@@ -625,6 +726,34 @@
 
 
         <div class="list_items_bc_tmd">
+            <?php
+                if ($result_bc_tmd->num_rows > 0) {
+                    while ($row_tmd = $result_bc_tmd->fetch_assoc()) {
+                        if ($row_tmd['LOAI_SP'] == 'Sản phẩm bán chạy') {
+                            echo '<div class="list_sp_tmd">';
+                            echo '<a href="#">';
+                            echo '<div class="img_sp_tmd">';
+                            echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                            echo '</div>';
+                            echo '</a>';
+                            echo '<div class="box-item">';
+                            echo '<div class="them_gio_tmd">';
+                            echo '<a href="#">';
+                            echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
+                            echo '</a>';
+                            if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
+                                echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
+                            } else {
+                                echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
+                            }
+                            echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                            echo '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+                    }
+                }
+            ?>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
@@ -810,7 +939,8 @@
                 <img src="Img/new-1.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Laptop Dell i3 giá chỉ từ 10.69 triệu, số lượng có hạn, chỉ còn duy nhất hôm nay</h3>
-                    <p>Loa loa loa biết tin gì chưa bạn ơi. Ưu đãi dành cho laptop Dell i3 số lượng có hạn tại ANK Dark chỉ còn duy nhất hôm nay thôi đó...</p>
+                    <p>Loa loa loa biết tin gì chưa bạn ơi. Ưu đãi dành cho laptop Dell i3 số lượng có hạn tại ANK Dark
+                        chỉ còn duy nhất hôm nay thôi đó...</p>
                 </div>
             </a>
         </div>
@@ -819,7 +949,8 @@
                 <img src="Img/new-2.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Laptop Lenovo phục vụ học tập - văn phòng giá chỉ từ 7.99 triệu</h3>
-                    <p>Tham gia sự kiện miễn phí mà còn có cơ hội rinh nhiều phần quà hấp dẫn bạn có tin? Thật đó nha! Các bạn khi tham gia IT Day không chỉ được tham gia minigame...</p>
+                    <p>Tham gia sự kiện miễn phí mà còn có cơ hội rinh nhiều phần quà hấp dẫn bạn có tin? Thật đó nha!
+                        Các bạn khi tham gia IT Day không chỉ được tham gia minigame...</p>
                 </div>
             </a>
         </div>
@@ -828,7 +959,9 @@
                 <img src="Img/new-3.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Công nghệ màn hình laptop Retina của Apple</h3>
-                    <p>Đối với công nghệ màn hình thiết bị điện tử của Apple thì đây là 1 thương hiệu hàng đầu trong lĩnh vực màn hình này. Màn hình máy tính của Apple sẽ giúp chúng ta cảm nhận được sự chân thật,...</p>
+                    <p>Đối với công nghệ màn hình thiết bị điện tử của Apple thì đây là 1 thương hiệu hàng đầu trong
+                        lĩnh vực màn hình này. Màn hình máy tính của Apple sẽ giúp chúng ta cảm nhận được sự chân
+                        thật,...</p>
                 </div>
             </a>
         </div>
@@ -836,29 +969,35 @@
     <div class="information">
         <h1>ĐĂNG KÝ NHẬN THÔNG TIN</h1>
         <div class="dang_ky_tmd">
-            <input type="search" placeholder="Tìm kiếm...." name="srch-luu-email_tmd">
+            <input type="search" placeholder="Nhập thông tin...." name="srch-luu-email_tmd">
             <input type="submit" name="srch-luu_email_tmd" value="ĐĂNG KÝ">
         </div>
     </div>
     <div class="footer">
         <div class="ttlh_tmd">
             <h3>THÔNG TIN LIÊN HỆ</h3>
-            <p><svg width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 440 440" style="enable-background:new 0 0 440 440;" xml:space="preserve">
-                <g>
-                    <path d="M340.57,241.141c-54.826,0-99.429,44.604-99.429,99.43c0,54.825,44.604,99.429,99.429,99.429S440,395.396,440,340.571
+            <p><svg width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 440 440"
+                    style="enable-background:new 0 0 440 440;" xml:space="preserve">
+                    <g>
+                        <path d="M340.57,241.141c-54.826,0-99.429,44.604-99.429,99.43c0,54.825,44.604,99.429,99.429,99.429S440,395.396,440,340.571
                         C440,285.745,395.396,241.141,340.57,241.141z M328.122,395.104l-58.807-58.807l21.213-21.213l37.594,37.594l56.035-56.034
                         l21.213,21.213L328.122,395.104z"></path>
-                    <path d="M166.62,119.397c-24.813,0-45,20.187-45,45s20.187,45,45,45c24.813,0,45-20.187,45-45S191.433,119.397,166.62,119.397z"></path>
-                    <path d="M326.984,211.853c4.067-14.39,6.256-29.559,6.256-45.234C333.24,74.745,258.494,0,166.62,0C74.746,0,0,74.745,0,166.619
+                        <path
+                            d="M166.62,119.397c-24.813,0-45,20.187-45,45s20.187,45,45,45c24.813,0,45-20.187,45-45S191.433,119.397,166.62,119.397z">
+                        </path>
+                        <path d="M326.984,211.853c4.067-14.39,6.256-29.559,6.256-45.234C333.24,74.745,258.494,0,166.62,0C74.746,0,0,74.745,0,166.619
                         c0,38.93,13.421,74.781,35.878,103.177L166.62,434.174l48.641-61.155c-2.688-10.373-4.12-21.247-4.12-32.448
                         C211.141,273.791,261.978,218.665,326.984,211.853z M91.62,164.397c0-41.355,33.645-75,75-75c41.355,0,75,33.645,75,75
                         s-33.645,75-75,75C125.265,239.397,91.62,205.752,91.62,164.397z"></path>
-                </g>
-            </svg>
-            Chùa Võ, Dương Nội, Hà Đông, Hà Nội
+                    </g>
+                </svg>
+                Chùa Võ, Dương Nội, Hà Đông, Hà Nội
             </p>
             <a href="tel:0855312279">
-                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" viewBox="0 0 612 612" style="enable-background:new 0 0 612 612;" xml:space="preserve">
+                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" viewBox="0 0 612 612"
+                    style="enable-background:new 0 0 612 612;" xml:space="preserve">
                     <g>
                         <path d="M586.923,256.013c-7.959-8.24-16.655-13.074-24.53-15.916c10.798-62.807,8.812-97.901-246.643-178.322
                             C55.771-20.07,26.688,13.85,5.274,81.869L1.622,93.471c-5.794,18.406,4.43,38.025,22.836,43.82l83.405,26.257
@@ -877,16 +1016,23 @@
                             C354.001,458.429,351.311,470.408,346.544,481.271z"></path>
                     </g>
                 </svg>
-                0855312279                
+                0855312279
             </a>
             <a href="mailto:dinhhoangducdbp2004@gmail.com">
-                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" viewBox="0 0 308.728 308.728" style="enable-background:new 0 0 308.728 308.728;" xml:space="preserve">
+                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px"
+                    viewBox="0 0 308.728 308.728" style="enable-background:new 0 0 308.728 308.728;"
+                    xml:space="preserve">
                     <g>
                         <g>
-                            <path d="M153.188,27.208c-37.562,1.134-130,55.057-144.495,63.65l-7.981,32.664l40.236,28.809l-7.733-27.01l189.62-54.288
-                                l26.895,93.949l58.098-41.331l-10.004-32.698C283.848,82.656,190.877,28.342,153.188,27.208z"></path>
-                            <polygon points="308.728,281.52 308.728,195.199 308.728,160.289 308.728,136.255 306.809,137.621 252.882,175.988 
-                                222.101,197.888 226.557,202.27 231.942,207.581 237.326,212.886 243.833,219.288 307.02,281.52 		"></polygon>
+                            <path
+                                d="M153.188,27.208c-37.562,1.134-130,55.057-144.495,63.65l-7.981,32.664l40.236,28.809l-7.733-27.01l189.62-54.288
+                                l26.895,93.949l58.098-41.331l-10.004-32.698C283.848,82.656,190.877,28.342,153.188,27.208z">
+                            </path>
+                            <polygon
+                                points="308.728,281.52 308.728,195.199 308.728,160.289 308.728,136.255 306.809,137.621 252.882,175.988 
+                                222.101,197.888 226.557,202.27 231.942,207.581 237.326,212.886 243.833,219.288 307.02,281.52 		">
+                            </polygon>
                             <polygon points="0,137.415 0,150.224 0,281.52 1.479,281.52 60.832,221.766 66.667,215.892 72.127,210.391 77.588,204.891 
                                 85.158,197.271 45.731,169.042 8.147,142.135 0,136.299 		"></polygon>
                             <path d="M231.905,222.705l-9.692-9.545l-5.39-5.311l-5.39-5.31l-1.382-1.366l-5.489-5.4l-0.954-0.938

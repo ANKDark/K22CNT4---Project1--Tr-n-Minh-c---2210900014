@@ -253,7 +253,7 @@ header {
   box-sizing: border-box;
   margin: auto;
   overflow: hidden;
-  width: 700px;
+  width: 50%;
 }
 
 @keyframes slideFromCenter {
@@ -285,7 +285,7 @@ header {
 }
 
 .money {
-  color: brown;
+  color: rgb(133, 60, 0);
 }
 
 .list_items_new_tmd {
@@ -298,9 +298,10 @@ header {
 
 .list_item1_new_tmd {
   width: 280px;
-  margin: 10px;
-  border-radius: 1px;
-  border: brown solid 1px;
+  margin: 9px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  border: rgb(165, 156, 156) solid 2px;
   flex: 0 0 auto;
   transition: transform 0.3s ease-in-out;
 }
@@ -312,7 +313,7 @@ header {
 
 .box-item {
   height: 190px;
-  border-top: brown solid 1px;
+  border-top: rgb(165, 156, 156) solid 2px;
   display: grid;
   align-items: center;
   text-align: center;
@@ -325,7 +326,7 @@ header {
 }
 
 .them_gio_btn_tmd {
-  background-color: #ac8c8c;
+  background-color: rgb(185, 119, 44);
   width: 115px;
   height: 30px;
   border: none;
@@ -390,7 +391,7 @@ header {
   display: flex;
   flex-wrap: wrap;
   transition: transform 0.5s ease;
-  width: 110%;
+  width: 104%;
   max-width: 1300px;
   align-items: center;
 }
@@ -399,7 +400,7 @@ header {
   width: 220px;
   margin: 10px;
   border-radius: 1px;
-  border: brown solid 1px;
+  border: rgb(165, 156, 156) solid 2px;
   flex: 0 0 auto;
   transition: transform 0.3s ease-in-out;
 }
@@ -524,8 +525,6 @@ header {
   width: 100%;
   height: 390px;
   flex-wrap: wrap;
-
-
 }
 .ttlh_tmd h3,
 .lien_ket_tmd h3,
