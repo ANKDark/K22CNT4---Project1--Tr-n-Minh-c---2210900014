@@ -82,4 +82,7 @@ function btnspBc() {
   document.querySelector('.list_items_km_tmd').style.display = 'none';
 }
 
-
+function toggleDrop () {
+  var droptt = document.getElementById("droptt");
+  droptt.classList.toggle("active");
+}

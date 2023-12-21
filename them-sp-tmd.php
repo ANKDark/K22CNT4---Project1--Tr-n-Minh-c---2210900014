@@ -1,24 +1,3 @@
-<?php
-include("ket-noi-tmd.php");
-$sql_sp_tmd = "SELECT * FROM sanpham_tmd";
-$res_sp_tmd = $conn_tmd->query($sql_sp_tmd);
-$error_tmd = "";
-
-if (isset($_POST["btnThemTMD"])) {
-    $MADM_TMD = $_POST['MADM_TMD'];
-    $TENDM_TMD = $_POST['TENDM_TMD'];
-    $TRANGTHAI_TMD = $_POST['TRANGTHAI_TMD'];
-
-    $sql_them_tmd = "INSERT INTO `danhmuc_tmd` (`MADM_TMD`, `TENDM_TMD`, `TRANGTHAI_TMD`) VALUES ('$MADM_TMD', '$TENDM_TMD', '$TRANGTHAI_TMD');";
-
-    if ($conn_tmd->query($sql_them_tmd)) {
-        header("Location: danhmuc-list-tranminhduc.php");
-        exit();
-    } else {
-        $error_tmd = "Lỗi thêm mới:" . $conn_tmd->errno;
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,8 +5,9 @@ if (isset($_POST["btnThemTMD"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="mainnn.css">
+    <link rel="stylesheet" href="z.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
@@ -93,12 +73,12 @@ if (isset($_POST["btnThemTMD"])) {
         <ul class="app_menu_tmd">
             <li><a class="app_menu_item_tmd ank" href="#"><i class='fa bx fa bx-cart-alt'></i><span
                         class="app_menu_label_tmd">ANK Bán Hàng</span></a></li>
-            <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-tachometer'></i><span
+            <li><a class="app_menu_item_tmd" href="bang_dieu_khien_tmd.php"><i class='fa bx fa bx-tachometer'></i><span
                         class="app_menu_label_tmd">Bảng điều khiển</span></a></li>
-            <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-id-card'></i><span
+            <li><a class="app_menu_item_tmd" href="quanly-khachhang-tmd.php"><i class='fa bx fa bx-id-card'></i><span
                         class="app_menu_label_tmd">Quản
-                        lý nhân viên</span></a></li>
-            <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-data'></i></i><span
+                        lý khách hàng</span></a></li>
+            <li><a class="app_menu_item_tmd" href="quanly-sp-tmd.php"><i class='fa bx fa bx-data'></i></i><span
                         class="app_menu_label_tmd">Quản lý sản phẩm</span></a></li>
             <li><a class="app_menu_item_tmd active" href="#"><i class='fa bx fa bx-purchase-tag-alt'></i><span
                         class="app_menu_label_tmd">Thêm sản phẩm</span></a></li>
@@ -154,8 +134,7 @@ if (isset($_POST["btnThemTMD"])) {
                         <form action="xulyform-sp-tmd.php" class="row_tmd" method="POST">
                             <div class="form_group_tmd col_md3_tmd">
                                 <label for="" class="control_label_tmd">Mã sản phẩm</label>
-                                <input type="number" class="form_control_tmd" placeholder="Đang để tự động"
-                                    name="SPID_TMD">
+                                <input type="number" class="form_control_tmd" name="SPID_TMD">
                             </div>
 
                             <div class="form_group_tmd col_md3_tmd">
@@ -172,8 +151,8 @@ if (isset($_POST["btnThemTMD"])) {
                                 <label for="exampleSelect1_tmd" class="control_label_tmd">Tình trạng</label>
                                 <select name="TINHTRANG_TMD" id="exampleSelect1_tmd" class="form_control_tmd">
                                     <option value="">-- Chọn tình trạng --</option>
-                                    <option value="ConHang">Còn hàng</option>
-                                    <option value="HetHang">Hết hàng</option>
+                                    <option value="1">Còn hàng</option>
+                                    <option value="0">Hết hàng</option>
                                 </select>
                             </div>
 
@@ -181,8 +160,8 @@ if (isset($_POST["btnThemTMD"])) {
                                 <label for="exampleSelect1_tmd" class="control_label_tmd">Dòng sản phẩm</label>
                                 <select name="DONGSP_TMD" id="exampleSelect1_tmd" class="form_control_tmd">
                                     <option value="">-- Chọn dòng sản phẩm --</option>
-                                    <option value="ConHang">Laptop Gaming</option>
-                                    <option value="HetHang">Laptop Văn Phòng</option>
+                                    <option value="1">Laptop Gaming</option>
+                                    <option value="0">Laptop Văn Phòng</option>
                                 </select>
                             </div>
 
@@ -190,10 +169,10 @@ if (isset($_POST["btnThemTMD"])) {
                                 <label for="exampleSelect1_tmd" class="control_label_tmd">Loại sản phẩm</label>
                                 <select name="LOAISP_TMD" id="exampleSelect1_tmd" class="form_control_tmd">
                                     <option value="">-- Chọn loại sản phẩm --</option>
-                                    <option value="SanPhamMoi">Sản phẩm mới</option>
-                                    <option value="SanPhamPhoBien">Sản phẩm phổ biến</option>
-                                    <option value="SanPhamKhuyenMai">Sản phẩm khuyến mãi</option>
-                                    <option value="SanPhamBanChay">Sản phẩm bán chạy</option>
+                                    <option value="0">Sản phẩm mới</option>
+                                    <option value="1">Sản phẩm phổ biến</option>
+                                    <option value="2">Sản phẩm khuyến mãi</option>
+                                    <option value="3">Sản phẩm bán chạy</option>
                                 </select>
                             </div>
 
@@ -201,8 +180,8 @@ if (isset($_POST["btnThemTMD"])) {
                                 <label for="exampleSelect1_tmd" class="control_label_tmd">Giảm giá sản phẩm</label>
                                 <select name="GIAMGIA_TMD" id="exampleSelect1_tmd" class="form_control_tmd">
                                     <option value="">-- Lựa chọn --</option>
-                                    <option value="Co">Có</option>
-                                    <option value="Khong">Không</option>
+                                    <option value="1">Có</option>
+                                    <option value="0">Không</option>
                                 </select>
                             </div>
 
