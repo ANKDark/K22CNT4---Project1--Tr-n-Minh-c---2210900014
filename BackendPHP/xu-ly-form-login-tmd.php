@@ -17,7 +17,7 @@ if (isset($_POST["btn_sub_tmd"])) {
         if (isset($chk)) {
             setcookie('taikhoan', $ten_dn_tmd, time() + 60 * 60);
         }
-        header("Location: Trangchu-tmd.php");
+        header("Location: ../User/Trangchu-tmd.php");
 
     } else {
         $error_message = "Sai mật khẩu hoặc tên đăng nhập không tồn tại vui lòng kiểm tra lại!!";
@@ -29,5 +29,5 @@ if (isset($_POST["btn_sub_tmd"])) {
     <div class="error-message">
         <?php echo $error_message; ?>
     </div>
-    <div class="backlogin"><a href="login_tmd.php">Quay lại trang đăng nhập</a></div>
+    <div class="backlogin"><a href="../User/login_tmd.php">Quay lại trang đăng nhập</a></div>
 <?php endif; ?>

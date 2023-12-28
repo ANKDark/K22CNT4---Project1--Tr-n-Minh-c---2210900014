@@ -27,7 +27,7 @@ if (isset($_POST["btnSubtmd"])) {
                 '$IMG_TMD', '$MOTA_TMD');";
 
     if ($conn_tmd->query($sql_them_tmd)) {
-        header("Location: them-sp-tmd.php");
+        header("Location: ../Admin/them-sp-tmd.php");
         exit();
     } else {
         $error_tmd = "Lỗi thêm mới:" . $conn_tmd->errno;

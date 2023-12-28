@@ -1,42 +1,21 @@
 <?php
 session_start();
 include('../BackendPHP/ket-noi-tmd.php');
-if (!isset($_SESSION['giohang']))
-    $_SESSION['giohang'] = [];
 
-if (isset($_POST['btncart']) && ($_POST['btncart'])) {
-    $SPID_TMD = $_POST['spid'];
-    $sql_cart_tmd = "SELECT * FROM SANPHAM_TMD WHERE SPID_TMD = '$SPID_TMD'";
-    $res_cart_tmd = $conn_tmd->query($sql_cart_tmd);
-    $row = $res_cart_tmd->fetch_array();
-    $IMG_TMD = $row['IMG_TMD'];
-    $TENSP_TMD = $row['TENSP_TMD'];
-    $GIAMGIA_TMD = $row['GIAMGIA_TMD'];
-    if ($GIAMGIA_TMD == 1) {
-        $GIASP_TMD = $row['GIADAGIAM_TMD'];
-    } else {
-        $GIASP_TMD = $row['GIABAN_TMD'];
-    }
-    $SOLUONG_TMD = $_POST['quantity'];
-    $TONG = $SOLUONG_TMD * $GIASP_TMD;
-    $fl = 0;
-    for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-        if ($SESSION['giohang'][$i][1] == $TENSP_TMD) {
-            $fl = 1;
-            $SOLUONGNW_TMD = $SOLUONG_TMD + $_SESSION['giohang'][$i][3];
-            $_SESSION['giohang'][$i][3] = $SOLUONGNW_TMD;
-            break;
-        }
-    }
-
-    if ($fl == 0) {
-        $sp = [$IMG_TMD, $TENSP_TMD, $GIASP_TMD, $SOLUONG_TMD, $TONG];
-        $_SESSION['giohang'][] = $sp;
-    }
-    var_dump($_SESSION['giohang'][]);
+if (isset($_GET['act']) && $_GET['act'] == 'logout') {
+    unset($_SESSION['user_id']);
+    header("Location: Trangchu-tmd.php");
+    exit();
 }
-?>
 
+$sql_select_sp_tmd = "SELECT * FROM sanpham_tmd WHERE 1=1";
+$result_moi_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_pb_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_km_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$resultgm_tmd = $conn_tmd->query($sql_select_sp_tmd);
+
+$sql_select_tmd = "";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,19 +71,21 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <div class="logo_search_menu_tmd">
                 <img src="../Img/logo.jpg" alt="" class="logo_TMD">
                 <div class="srch_tmd">
-                    <form action="" method="get">
+                    <form action="../BackendPHP/timkiemsanpham_user_tmd.php" method="post">
                         <input type="search" placeholder="Tìm kiếm...." name="timkiem_tmd">
                         <input type="submit" name="sub_srch_tmd" value="Tìm kiếm">
                 </div>
                 </form>
                 <div class="menu_tmd">
-                    <a class="menu_link_tmd" href="#" title="Giỏ hàng">
+                    <a class="menu_link_tmd" href="cart_products_tmd.php" title="Giỏ hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                             class="bi bi-basket2-fill" viewBox="0 0 16 16">
                             <path
                                 d="M5.929 1.757a.5.5 0 1 0-.858-.514L2.217 6H.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h.623l1.844 6.456A.75.75 0 0 0 3.69 15h8.622a.75.75 0 0 0 .722-.544L14.877 8h.623a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1.717L10.93 1.243a.5.5 0 1 0-.858.514L12.617 6H3.383L5.93 1.757zM4 10a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm3 0a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm4-1a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1z" />
                         </svg>
-                        <span id="cartCount">0</span>
+                        <span id="cartCount">
+                            <?php echo count($_SESSION['giohang']); ?>
+                        </span>
                     </a>
                     <a class="menu_link_tmd" href="tracuu_tmd.php" title="Tra cứu đơn hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -149,63 +130,64 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <ul class="ul_tmd">
                 <li><a href="Trangchu-tmd.php">TRANG CHỦ</a></li>
                 <li><a href="#">GIỚI THIỆU</a></li>
-                <li><a href="#">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="#">LAPTOP GAMING</a></li>
+                <li><a href="Laptop_loaivp_tmd.php">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="Laptop_loaigm_tmd.php">LAPTOP GAMING</a></li>
                 <li><a href="#">BLOGS</a></li>
                 <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
     </header>
-    <div class="product_container_tmd">
-        <div class="product_main_tmd">
-            <?php
-            if (isset($_SESSION['giohang']) && (is_array($_SESSION['giohang']))) {
-                $TONGALL = 0;
-                for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-                    ?>
-                    <div class="content-area page-wrapper">
-                        <div class="row">
-                            <div class="large-12 col">
-                                <div class="cover">
-                                    <div class="prd1">
-                                        <form action="">
-                                            <div>
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>XÓA</th>
-                                                            <th>ẢNH</th>
-                                                            <th>SẢN PHẨM</th>
-                                                            <th>GIÁ</th>
-                                                            <th>SỐ LƯỢNG</th>
-                                                            <th>TỔNG</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <td><a href="cart_products_tmd.php?delcart=<?php $i; ?>"></a></td>
-                                                        <td><img src="../Img/<?php $_SESSION['giohang'][$i][0] ?>" alt=""></td>
-                                                        <td><?php $_SESSION['giohang'][$i][1] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][2] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][3] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][4] ?></td>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                    <?php
-                }
+    <div id="menu_sp_tmd">
+        <h2>Tra cứu thông tin</h2>
+        <?php
+        if (isset($_SESSION['user_id']) && ($_SESSION['user_id']) != "") {
+            $TENDN_TMD = $_SESSION['user_id'];
+            $sql_tmd = "SELECT * FROM DONHANG WHERE TENDN_TMD = '$TENDN_TMD'";
+            $result_donhang_tmd = $conn_tmd->query($sql_tmd);
+            if ($result_donhang_tmd->num_rows > 0) {
+                ?>
+                <table>
+                    <thead>
+                        <th>Mã đơn</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th>Ngày đặt</th>
+                    </thead>
+                    <tbody>
+                        <?php
+                        while ($row_tmd = $result_donhang_tmd->fetch_assoc()) {
+                            ?>
+                            <tr>
+                                <td>
+                                    <?php echo $row_tmd['MADONHANG'] ?>
+                                </td>
+                                <td>
+                                    <?php echo $row_tmd['TENSP_TMD'] ?>
+                                </td>
+                                <td>
+                                    <?php echo $row_tmd['SOLUONG_TMD'] ?>
+                                </td>
+                                <td>
+                                    <?php echo $row_tmd['TONGTIEN_TMD'] ?>
+                                </td>
+                                <td>
+                                    <?php echo $row_tmd['NGAYDAT_TMD'] ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <?php
+            } else {
+                echo "<p>Không có đơn hàng nào.</p>";
             }
-            ?>
-        </div>
+        } else {
+            echo "<table><tr><td colspan='5' style='text-align: center;'><a style='text-decoration: none; text-transform: uppercase; font-size: 16px; color: #008000;' href='../User/login_tmd.php' title='Đăng nhập'>Đăng nhập</a></td></tr></table>";
+        }
+        ?>
     </div>
 
     <div class="information">
@@ -306,12 +288,12 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
         <div class="lien_ket_tmd">
             <h3>LIÊN KẾT</h3>
             <ul class="lk_ul_tmd">
-                <li><a href="index.html">TRANG CHỦ</a></li>
-                <li><a href="index.html">GIỚI THIỆU</a></li>
-                <li><a href="index.html">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="index.html">LAPTOP GAMING</a></li>
-                <li><a href="index.html">BLOGS</a></li>
-                <li><a href="index.html">LIÊN HỆ</a></li>
+                <li><a href="#">TRANG CHỦ</a></li>
+                <li><a href="#">GIỚI THIỆU</a></li>
+                <li><a href="#">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="#">LAPTOP GAMING</a></li>
+                <li><a href="#">BLOGS</a></li>
+                <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="ho_tro_tmd">
@@ -331,9 +313,6 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <img src="../Img/img-payment.png" alt="">
         </div>
     </div>
-</body>
-
-</html>
 </body>
 
 </html>

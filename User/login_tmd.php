@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login-Trần Minh Đức- 2210900014</title>
-    <link rel="stylesheet" href="main_login_register_tmd.css">
+    <link rel="stylesheet" href="../Style/main_login_register_tmd.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="script-login.js"></script>
+    <script src="../Js/script-login.js"></script>
 
 </head>
 <body>
     <div class="login">
         <div class="wrapper_tmd">
-            <form action="xu-ly-form-login-tmd.php" method="post">
+            <form action="../BackendPHP/xu-ly-form-login-tmd.php" method="post">
                 <h1>Đăng nhập</h1>  
                 <div class="input_box_tmd">
                     <input type="text" name="ten_dn_tmd" placeholder="Tên đăng nhập" required>
@@ -37,7 +37,7 @@
     </div>
     <div class="register">
         <div class="wrapper_tmd">
-            <form action="xulyform-register-tmd.php" onsubmit="kiemTraForm(event)" method="post">
+            <form action="../BackendPHP/xulyform-register-tmd.php" onsubmit="kiemTraForm(event)" method="post">
                 <h1>Đăng ký</h1>  
                 <div class="input_box_tmd">
                     <input type="text" name="ten_dn_tmd" placeholder="Tên đăng nhập" required>

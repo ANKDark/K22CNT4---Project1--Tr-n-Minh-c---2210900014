@@ -1,42 +1,27 @@
 <?php
 session_start();
 include('../BackendPHP/ket-noi-tmd.php');
-if (!isset($_SESSION['giohang']))
-    $_SESSION['giohang'] = [];
 
-if (isset($_POST['btncart']) && ($_POST['btncart'])) {
-    $SPID_TMD = $_POST['spid'];
-    $sql_cart_tmd = "SELECT * FROM SANPHAM_TMD WHERE SPID_TMD = '$SPID_TMD'";
-    $res_cart_tmd = $conn_tmd->query($sql_cart_tmd);
-    $row = $res_cart_tmd->fetch_array();
-    $IMG_TMD = $row['IMG_TMD'];
-    $TENSP_TMD = $row['TENSP_TMD'];
-    $GIAMGIA_TMD = $row['GIAMGIA_TMD'];
-    if ($GIAMGIA_TMD == 1) {
-        $GIASP_TMD = $row['GIADAGIAM_TMD'];
-    } else {
-        $GIASP_TMD = $row['GIABAN_TMD'];
-    }
-    $SOLUONG_TMD = $_POST['quantity'];
-    $TONG = $SOLUONG_TMD * $GIASP_TMD;
-    $fl = 0;
-    for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-        if ($SESSION['giohang'][$i][1] == $TENSP_TMD) {
-            $fl = 1;
-            $SOLUONGNW_TMD = $SOLUONG_TMD + $_SESSION['giohang'][$i][3];
-            $_SESSION['giohang'][$i][3] = $SOLUONGNW_TMD;
-            break;
-        }
-    }
+if (isset($_GET['act']) && $_GET['act'] == 'logout') {
+    unset($_SESSION['user_id']);
+    header("Location: Trangchu-tmd.php");
+    exit();
+}
 
-    if ($fl == 0) {
-        $sp = [$IMG_TMD, $TENSP_TMD, $GIASP_TMD, $SOLUONG_TMD, $TONG];
-        $_SESSION['giohang'][] = $sp;
-    }
-    var_dump($_SESSION['giohang'][]);
+if (isset($_GET['spid']) && $_GET['spid']) {
+    $SPID_TMD = $_GET['spid'];
+    $sql_ctsp_tmd = "SELECT * FROM SANPHAM_TMD WHERE SPID_TMD = '$SPID_TMD'";
+    $res_ctsp_tmd = $conn_tmd->query($sql_ctsp_tmd);
+    $row = $res_ctsp_tmd->fetch_array();
+}
+
+$sql_select_tmd = "";
+
+if (isset($_GET['sub_srch_tmd'])) {
+    $keyword = mysqli_real_escape_string($conn_tmd, $_GET['timkiem_tmd']);
+    $sql_select_tmd .= " AND TENSP_TMD LIKE '%$keyword%'";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -158,53 +143,82 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
     </header>
     <div class="product_container_tmd">
         <div class="product_main_tmd">
-            <?php
-            if (isset($_SESSION['giohang']) && (is_array($_SESSION['giohang']))) {
-                $TONGALL = 0;
-                for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-                    ?>
-                    <div class="content-area page-wrapper">
+            <div id="menu_sp_tmd" class="row mb-0">
+                <div class="product-gallery large-6">
+                    <div class="product_img">
+                        <img src="../Img/<?php echo $row['IMG_TMD']; ?>" alt="">
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="link_sile">
+                        <a href="Trangchu-tmd.php">Trang chủ</a>
+                        <span class="divider">/</span>
+                        <a href="#">Sản phẩm</a>
+                    </div>
+                    <h1>
+                        <?php echo $row['TENSP_TMD']; ?>
+                    </h1>
+                    <div class="is-divider small"></div>
+                    <div>
+                        <p class="price">
+                            <?php
+                            if ($row['GIAMGIA_TMD'] == 1) {
+                                echo '<span class="money">' . $row['GIADAGIAM_TMD'] . '<del style="color:#333">' . $row['GIAGOC_TMD'] . '</del></span><br>';
+                            } else {
+                                echo '<span class="money">' . $row['GIAGOC_TMD'] . '</span><br>';
+                            }
+                            ?>
+                        </p>
+                    </div>
+                    <div class="mota_sp">
+                        <p>
+                            <?php echo $row['MOTA_TMD']; ?>
+                        </p>
+                        <p>
+                            <?php echo $row['DONGSP_TMD']; ?>
+                        </p>
+                        <form action="cart_products_tmd.php" method="post">
+                            <div class="buttons_added">
+                                <input type="button" value="-" class="minus button is-form" onclick="decrement()">
+                                <label class="screen-reader-text" for="quantity_ip"></label>
+                                <input type="number" id="quantity_ip" class="input-text qty text" step="1" min="1"
+                                    max="9999" name="soluong" value="1" size="4" pattern="[0-9]*" inputmode="numeric"
+                                    aria-labelledby="">
+                                <input type="button" value="+" class="plus button is-form" onclick="increment()">
+                            </div>
+                            <input type="hidden" name="anh" value="<?php echo $row['IMG_TMD']; ?>">
+                            <input type="hidden" name="tensp" value="<?php echo $row['TENSP_TMD']; ?>">
+                            <input type="hidden" name="giamgia" value="<?php echo $row['GIAMGIA_TMD'];
+                            ; ?>">
+                            <input type="hidden" name="giadagiam" value="<?php echo $row['GIADAGIAM_TMD'];
+                            ; ?>">
+                            <input type="hidden" name="giaban" value="<?php echo $row['GIABAN_TMD'];
+                            ; ?>">
+                            <input type="hidden" name="spid" value="<?php echo $SPID_TMD; ?>">
+                            <input type="submit" name="btncart" class="cart_btn" value="THÊM GIỎ HÀNG">
+                        </form>
                         <div class="row">
-                            <div class="large-12 col">
-                                <div class="cover">
-                                    <div class="prd1">
-                                        <form action="">
-                                            <div>
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>XÓA</th>
-                                                            <th>ẢNH</th>
-                                                            <th>SẢN PHẨM</th>
-                                                            <th>GIÁ</th>
-                                                            <th>SỐ LƯỢNG</th>
-                                                            <th>TỔNG</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <td><a href="cart_products_tmd.php?delcart=<?php $i; ?>"></a></td>
-                                                        <td><img src="../Img/<?php $_SESSION['giohang'][$i][0] ?>" alt=""></td>
-                                                        <td><?php $_SESSION['giohang'][$i][1] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][2] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][3] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][4] ?></td>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </form>
+                            <div class="col">
+                                <div class="col_su">
+                                    <strong>Đơn vị vận chuyển</strong>
+                                    <div class="Dvvc">
+                                        <img src="../Img/Donvivanchuyen.jpg" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="col_su">
+                                    <strong>Phương thức thanh toán</strong>
+                                    <div class="Dvvc">
+                                        <img src="../Img/Nganhang.jpg" alt="">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-
-
-
-                    <?php
-                }
-            }
-            ?>
         </div>
     </div>
 
@@ -331,9 +345,6 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <img src="../Img/img-payment.png" alt="">
         </div>
     </div>
-</body>
-
-</html>
 </body>
 
 </html>

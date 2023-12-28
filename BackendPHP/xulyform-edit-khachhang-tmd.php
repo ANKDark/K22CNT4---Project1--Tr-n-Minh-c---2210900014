@@ -25,7 +25,7 @@ if (isset($_POST["btnSuaTMD"])) {
   $statement->bind_param("ssiss", $HOTEN_TMD, $EMAIL_TMD, $SDT_TMD, $MATKHAU_TMD, $TENDN_TMD);
 
   if ($statement->execute()) {
-    header("Location: quanly-khachhang-tmd.php");
+    header("Location: ../Admin/quanly-khachhang-tmd.php");
     exit();
   } else {
     $error_tmd = "Lỗi cập nhật: " . $statement->error;

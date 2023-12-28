@@ -20,7 +20,7 @@
             $sql_insert_tmd = "INSERT INTO `dangky` (`TENDN_TMD`, `HOTEN_TMD`, `EMAIL_TMD`, `SDT_TMD`, `MATKHAU_TMD`) VALUES ('$ten_dn_tmd', '$hoten_dn_tmd', '$email_dn_tmd', '$phone_tmd', '$pass_tmd');";
 
             if($conn_tmd->query($sql_insert_tmd)) {
-                header("Location: login_tmd.php");
+                header("Location: ../User/login_tmd.php");
                 exit();
             } else {
                 echo $error_message = "Lỗi đăng ký" . $conn->error;

@@ -29,7 +29,7 @@ function getStatusName($SPID_TMD)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="z.css">
+    <link rel="stylesheet" href="../Style/z.css">
     <title>Sửa sản phẩm</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>

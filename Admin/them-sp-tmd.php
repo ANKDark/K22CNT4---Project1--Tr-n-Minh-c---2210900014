@@ -1,3 +1,9 @@
+<?php
+session_start();
+if (!$_SESSION['admin_id'] == 'Admin' && !$_SESSION['admin_pass'] == 'Ducdeptrai') {
+    header('Location: ../Admin/login_tmd.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="z.css">
+    <link rel="stylesheet" href="../Style/z.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -55,7 +61,7 @@
     <div class="header">
         <ul class="app_nav_tmd">
             <li>
-                <a href="Trangchu-tmd.php" title="Đăng xuất">
+                <a href="../Admin/login_tmd.php?delid=logout" title="Đăng xuất">
                     <i class='fa bx fa bx-log-out'></i>
                 </a>
             </li>
@@ -63,7 +69,7 @@
     </div>
     <div class="sidebar_tmd">
         <div class="sidebar_user_tmd">
-            <img class="sidebar_user_avatar_tmd" src="Img/Face_tmd.jpg" alt="">
+            <img class="sidebar_user_avatar_tmd" src="../Img/Face_tmd.jpg" alt="">
             <div>
                 <p class="sidebar_user_name_tmd"><b>Trần Minh Đức</b></p>
                 <p class="sidebar_user_designation_tmd">Chào mừng trở lại</p>
@@ -82,12 +88,12 @@
                         class="app_menu_label_tmd">Quản lý sản phẩm</span></a></li>
             <li><a class="app_menu_item_tmd active" href="#"><i class='fa bx fa bx-purchase-tag-alt'></i><span
                         class="app_menu_label_tmd">Thêm sản phẩm</span></a></li>
-            <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-task'></i><span
+            <li><a class="app_menu_item_tmd" href="quanly_donhang_tmd.php"><i class='fa bx fa bx-task'></i><span
                         class="app_menu_label_tmd">Quản lý
                         đơn hàng</span></a></li>
-            <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-run'></i><span
+            <li><a class="app_menu_item_tmd" href="quanly_news_tmd.php"><i class='fa bx fa bx-run'></i><span
                         class="app_menu_label_tmd">Quản lý
-                        nội bộ</span></a></li>
+                        tin tức</span></a></li>
             <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-dollar-circle'></i><span
                         class="app_menu_label_tmd">Bảng kê lương</span></a></li>
             <li><a class="app_menu_item_tmd" href="#"><i class='fa bx fa bx-pie-chart-alt-2'></i><span
@@ -131,7 +137,7 @@
                                 </a>
                             </div>
                         </div>
-                        <form action="xulyform-sp-tmd.php" class="row_tmd" method="POST">
+                        <form action="../BackendPHP/xulyform-sp-tmd.php" class="row_tmd" method="POST">
                             <div class="form_group_tmd col_md3_tmd">
                                 <label for="" class="control_label_tmd">Mã sản phẩm</label>
                                 <input type="number" class="form_control_tmd" name="SPID_TMD">

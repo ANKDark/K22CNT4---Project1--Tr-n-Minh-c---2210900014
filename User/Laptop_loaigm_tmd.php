@@ -1,42 +1,21 @@
 <?php
 session_start();
 include('../BackendPHP/ket-noi-tmd.php');
-if (!isset($_SESSION['giohang']))
-    $_SESSION['giohang'] = [];
 
-if (isset($_POST['btncart']) && ($_POST['btncart'])) {
-    $SPID_TMD = $_POST['spid'];
-    $sql_cart_tmd = "SELECT * FROM SANPHAM_TMD WHERE SPID_TMD = '$SPID_TMD'";
-    $res_cart_tmd = $conn_tmd->query($sql_cart_tmd);
-    $row = $res_cart_tmd->fetch_array();
-    $IMG_TMD = $row['IMG_TMD'];
-    $TENSP_TMD = $row['TENSP_TMD'];
-    $GIAMGIA_TMD = $row['GIAMGIA_TMD'];
-    if ($GIAMGIA_TMD == 1) {
-        $GIASP_TMD = $row['GIADAGIAM_TMD'];
-    } else {
-        $GIASP_TMD = $row['GIABAN_TMD'];
-    }
-    $SOLUONG_TMD = $_POST['quantity'];
-    $TONG = $SOLUONG_TMD * $GIASP_TMD;
-    $fl = 0;
-    for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-        if ($SESSION['giohang'][$i][1] == $TENSP_TMD) {
-            $fl = 1;
-            $SOLUONGNW_TMD = $SOLUONG_TMD + $_SESSION['giohang'][$i][3];
-            $_SESSION['giohang'][$i][3] = $SOLUONGNW_TMD;
-            break;
-        }
-    }
-
-    if ($fl == 0) {
-        $sp = [$IMG_TMD, $TENSP_TMD, $GIASP_TMD, $SOLUONG_TMD, $TONG];
-        $_SESSION['giohang'][] = $sp;
-    }
-    var_dump($_SESSION['giohang'][]);
+if (isset($_GET['act']) && $_GET['act'] == 'logout') {
+    unset($_SESSION['user_id']);
+    header("Location: Trangchu-tmd.php");
+    exit();
 }
-?>
 
+$sql_select_sp_tmd = "SELECT * FROM sanpham_tmd WHERE 1=1";
+$result_moi_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_pb_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$result_km_tmd = $conn_tmd->query($sql_select_sp_tmd);
+$resultgm_tmd = $conn_tmd->query($sql_select_sp_tmd);
+
+$sql_select_tmd = "";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,19 +71,19 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <div class="logo_search_menu_tmd">
                 <img src="../Img/logo.jpg" alt="" class="logo_TMD">
                 <div class="srch_tmd">
-                    <form action="" method="get">
+                    <form action="../BackendPHP/timkiemsanpham_user_tmd.php" method="post">
                         <input type="search" placeholder="Tìm kiếm...." name="timkiem_tmd">
                         <input type="submit" name="sub_srch_tmd" value="Tìm kiếm">
                 </div>
                 </form>
                 <div class="menu_tmd">
-                    <a class="menu_link_tmd" href="#" title="Giỏ hàng">
+                    <a class="menu_link_tmd" href="cart_products_tmd.php" title="Giỏ hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                             class="bi bi-basket2-fill" viewBox="0 0 16 16">
                             <path
                                 d="M5.929 1.757a.5.5 0 1 0-.858-.514L2.217 6H.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h.623l1.844 6.456A.75.75 0 0 0 3.69 15h8.622a.75.75 0 0 0 .722-.544L14.877 8h.623a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1.717L10.93 1.243a.5.5 0 1 0-.858.514L12.617 6H3.383L5.93 1.757zM4 10a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm3 0a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm4-1a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1z" />
                         </svg>
-                        <span id="cartCount">0</span>
+                        <span id="cartCount"><?php echo count($_SESSION['giohang']); ?></span>
                     </a>
                     <a class="menu_link_tmd" href="tracuu_tmd.php" title="Tra cứu đơn hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -149,65 +128,278 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <ul class="ul_tmd">
                 <li><a href="Trangchu-tmd.php">TRANG CHỦ</a></li>
                 <li><a href="#">GIỚI THIỆU</a></li>
-                <li><a href="#">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="#">LAPTOP GAMING</a></li>
+                <li><a href="Laptop_loaivp_tmd.php">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="Laptop_loaigm_tmd.php">LAPTOP GAMING</a></li>
                 <li><a href="#">BLOGS</a></li>
                 <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
     </header>
-    <div class="product_container_tmd">
-        <div class="product_main_tmd">
+    <div id="menu_sp_tmd">
+        <h2>DÒNG LAPTOP GAMING</h2>
+        <div class="list_itemsgm_tmd">
             <?php
-            if (isset($_SESSION['giohang']) && (is_array($_SESSION['giohang']))) {
-                $TONGALL = 0;
-                for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-                    ?>
-                    <div class="content-area page-wrapper">
-                        <div class="row">
-                            <div class="large-12 col">
-                                <div class="cover">
-                                    <div class="prd1">
-                                        <form action="">
-                                            <div>
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>XÓA</th>
-                                                            <th>ẢNH</th>
-                                                            <th>SẢN PHẨM</th>
-                                                            <th>GIÁ</th>
-                                                            <th>SỐ LƯỢNG</th>
-                                                            <th>TỔNG</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <td><a href="cart_products_tmd.php?delcart=<?php $i; ?>"></a></td>
-                                                        <td><img src="../Img/<?php $_SESSION['giohang'][$i][0] ?>" alt=""></td>
-                                                        <td><?php $_SESSION['giohang'][$i][1] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][2] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][3] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][4] ?></td>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                    <?php
+            if ($resultgm_tmd->num_rows > 0) {
+                while ($row_tmd = $resultgm_tmd->fetch_assoc()) {
+                    if ($row_tmd['DONGSP_TMD'] == 1 && $row_tmd['TINHTRANG_TMD'] == 1) {
+                        echo '<div class="list_sp_tmd">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
+                        echo '<div class="img_sp_tmd">';
+                        echo '<img src="../Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '</div>';
+                        echo '</a>';
+                        echo '<div class="box-item">';
+                        echo '<div class="them_gio_tmd">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
+                        echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
+                        if ($row_tmd['GIAMGIA_TMD'] == 1) {
+                            echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
+                        } else {
+                            echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
+                        }
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>';
+                        echo '</a>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
                 }
             }
             ?>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz)</p>
+                        </a>
+                        <span class="money">30.590.000<del style="color:#333">30.890.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti, 15.6'' FHD IPS 144Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti,
+                                15.6'' FHD IPS 144Hz)</p>
+                        </a>
+                        <span class="money">15.990.000 </span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz)
+                            </p>
+                        </a>
+                        <span class="money">17.890.000<del style="color:#333">22.990.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD
+                                144Hz)</p>
+                        </a>
+                        <span class="money">16.890.000<del style="color:#333">19.990.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6 FHD 144Hz)-km.jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6" FHD 144Hz)</p>
+                        </a>
+                        <span class="money">16.790.000<del style="color:#333">19.990.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6'' QHD+ 165Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6''
+                                QHD+ 165Hz)</p>
+                        </a>
+                        <span class="money">28.890.000</span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6'' QHD 240Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6''
+                                QHD 240Hz)</p>
+                        </a>
+                        <span class="money">28.890.000</span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, RTX 3060 6GB, 15.6'' FHD 165Hz)</p>
+                        </a>
+                        <span class="money">23.890.000<del style="color:#333">29.990.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD
+                                144Hz)</p>
+                        </a>
+                        <span class="money">16.890.000<del style="color:#333">19.990.000</del></span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            <div class="list_sp_tmd">
+                <a href="#">
+                    <div class="img_sp_tmd">
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz).jpg"
+                            alt="">
+                    </div>
+                </a>
+                <div class="box-item">
+                    <div class="them_gio_tmd">
+                        <a href="#">
+                            <p>ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz)
+                            </p>
+                        </a>
+                        <span class="money">29.890.000</span><br>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <div class="news">
+    <?php
+        $sql_select_new_tmd = "SELECT * FROM NEWS WHERE 1=1";
+        $result_new_tmd = $conn_tmd->query($sql_select_new_tmd);
 
+        if ($result_new_tmd->num_rows > 0) {
+            while ($row_tmd = $result_new_tmd->fetch_assoc()) {
+                if ($row_tmd['HIENTHI'] == 1) {
+                    echo '
+                        <div class="son_news_tmd">
+                            <a href="#">
+                                <img src="../Img/' . $row_tmd['IMG'] . '" alt="">
+                                <div class="box-text_tmd">
+                                    <h3>' . $row_tmd['TITLE'] . '</h3>
+                                    <p>' . $row_tmd['CHITIETNEW	'] . '</p>
+                                </div>
+                            </a>
+                        </div>
+                    ';
+                }
+            }
+        }
+        ?>
+        <div class="son_news_tmd">
+            <a href="#">
+                <img src="../Img/new-1.jpg" alt="">
+                <div class="box-text_tmd">
+                    <h3>Laptop Dell i3 giá chỉ từ 10.69 triệu, số lượng có hạn, chỉ còn duy nhất hôm nay</h3>
+                    <p>Loa loa loa biết tin gì chưa bạn ơi. Ưu đãi dành cho laptop Dell i3 số lượng có hạn tại ANK Dark
+                        chỉ còn duy nhất hôm nay thôi đó...</p>
+                </div>
+            </a>
+        </div>
+        <div class="son_news_tmd">
+            <a href="#">
+                <img src="../Img/new-2.jpg" alt="">
+                <div class="box-text_tmd">
+                    <h3>Laptop Lenovo phục vụ học tập - văn phòng giá chỉ từ 7.99 triệu</h3>
+                    <p>Tham gia sự kiện miễn phí mà còn có cơ hội rinh nhiều phần quà hấp dẫn bạn có tin? Thật đó nha!
+                        Các bạn khi tham gia IT Day không chỉ được tham gia minigame...</p>
+                </div>
+            </a>
+        </div>
+        <div class="son_news_tmd">
+            <a href="#">
+                <img src="../Img/new-3.jpg" alt="">
+                <div class="box-text_tmd">
+                    <h3>Công nghệ màn hình laptop Retina của Apple</h3>
+                    <p>Đối với công nghệ màn hình thiết bị điện tử của Apple thì đây là 1 thương hiệu hàng đầu trong
+                        lĩnh vực màn hình này. Màn hình máy tính của Apple sẽ giúp chúng ta cảm nhận được sự chân
+                        thật,...</p>
+                </div>
+            </a>
+        </div>
+    </div>
     <div class="information">
         <h1>ĐĂNG KÝ NHẬN THÔNG TIN</h1>
         <div class="dang_ky_tmd">
@@ -306,12 +498,12 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
         <div class="lien_ket_tmd">
             <h3>LIÊN KẾT</h3>
             <ul class="lk_ul_tmd">
-                <li><a href="index.html">TRANG CHỦ</a></li>
-                <li><a href="index.html">GIỚI THIỆU</a></li>
-                <li><a href="index.html">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="index.html">LAPTOP GAMING</a></li>
-                <li><a href="index.html">BLOGS</a></li>
-                <li><a href="index.html">LIÊN HỆ</a></li>
+                <li><a href="#">TRANG CHỦ</a></li>
+                <li><a href="#">GIỚI THIỆU</a></li>
+                <li><a href="#">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="#">LAPTOP GAMING</a></li>
+                <li><a href="#">BLOGS</a></li>
+                <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="ho_tro_tmd">
@@ -331,9 +523,6 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
             <img src="../Img/img-payment.png" alt="">
         </div>
     </div>
-</body>
-
-</html>
 </body>
 
 </html>

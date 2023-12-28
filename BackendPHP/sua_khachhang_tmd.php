@@ -29,7 +29,7 @@ function getStatusName($TENDN_TMD)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="z.css">
+    <link rel="stylesheet" href="../Style/z.css">
     <title>Sửa khách hàng</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
@@ -70,7 +70,7 @@ function getStatusName($TENDN_TMD)
                     <div class="edit-button-container">
                         <input type="submit" class="edit-button edit-button-member-confirm" name="btnSuaTMD" value="Cập nhật">
                         <div class="edit-button__loader">
-                            <div></div>e:\Project1-Trần Minh Đức- 2210900014-K22CNT4\bang_dieu_khien_tmd.php
+                            <div></div>
                             <div></div>
                             <div></div>
                         </div>

@@ -1,6 +1,12 @@
 <?php
 session_start();
-include("ket-noi-tmd.php");
+include('../BackendPHP/ket-noi-tmd.php');
+
+if (isset($_GET['act']) && $_GET['act'] == 'logout') {
+    unset($_SESSION['user_id']);
+    header("Location: Trangchu-tmd.php");
+    exit();
+}
 
 $sql_select_sp_tmd = "SELECT * FROM sanpham_tmd WHERE 1=1";
 $result_moi_tmd = $conn_tmd->query($sql_select_sp_tmd);
@@ -9,11 +15,6 @@ $result_km_tmd = $conn_tmd->query($sql_select_sp_tmd);
 $result_bc_tmd = $conn_tmd->query($sql_select_sp_tmd);
 
 $sql_select_tmd = "";
-
-if (isset($_GET['sub_srch_tmd'])) {
-    $keyword = mysqli_real_escape_string($conn_tmd, $_GET['timkiem_tmd']);
-    $sql_select_tmd .= " AND TENSP_TMD LIKE '%$keyword%'";
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,8 +23,8 @@ if (isset($_GET['sub_srch_tmd'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 1 - Trần Minh Đức - 2210900014</title>
-    <link rel="stylesheet" href="mainz.css">
-    <script src="script.js"></script>
+    <link rel="stylesheet" href="../Style/main3.css">
+    <script src="../Js/c.js"></script>
 </head>
 
 <body>
@@ -68,20 +69,23 @@ if (isset($_GET['sub_srch_tmd'])) {
 
         <div class="cover-menu_tmd">
             <div class="logo_search_menu_tmd">
-                <img src="Img/logo.jpg" alt="" class="logo_TMD">
+                <img src="../Img/logo.jpg" alt="" class="logo_TMD">
                 <div class="srch_tmd">
-                    <form action="" method="get">
+                    <form action="../BackendPHP/timkiemsanpham_user_tmd.php" method="post">
                         <input type="search" placeholder="Tìm kiếm...." name="timkiem_tmd">
                         <input type="submit" name="sub_srch_tmd" value="Tìm kiếm">
                 </div>
                 </form>
                 <div class="menu_tmd">
-                    <a class="menu_link_tmd" href="#" title="Giỏ hàng">
+                    <a class="menu_link_tmd" href="cart_products_tmd.php" title="Giỏ hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                             class="bi bi-basket2-fill" viewBox="0 0 16 16">
                             <path
                                 d="M5.929 1.757a.5.5 0 1 0-.858-.514L2.217 6H.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h.623l1.844 6.456A.75.75 0 0 0 3.69 15h8.622a.75.75 0 0 0 .722-.544L14.877 8h.623a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1.717L10.93 1.243a.5.5 0 1 0-.858.514L12.617 6H3.383L5.93 1.757zM4 10a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm3 0a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm4-1a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1z" />
                         </svg>
+                        <span id="cartCount">
+                            <?php echo count($_SESSION['giohang']); ?>
+                        </span>
                     </a>
                     <a class="menu_link_tmd" href="tracuu_tmd.php" title="Tra cứu đơn hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -95,7 +99,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                     <?php
                     if (isset($_SESSION['user_id']) && ($_SESSION['user_id']) != "") {
                         ?>
-                        <button class="btnstrlogin" onclick="toggleDropdown()">
+                        <button class="btnstrlogin" onclick="toggleDropdown()" title="<?php echo $_SESSION['user_id']; ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                 class="bi bi-person-fill" viewBox="0 0 16 16">
                                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
@@ -103,7 +107,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                         </button>
                         <ul id="dropdown">
                             <li><a href="#">Thông tin cá nhân</a></li>
-                            <li><a href="#">Đăng xuất</a></li>
+                            <li><a href="Trangchu-tmd.php?act=logout">Đăng xuất</a></li>
                         </ul>
                         <?php
                     } else {
@@ -124,12 +128,12 @@ if (isset($_GET['sub_srch_tmd'])) {
 
         <div class="list_items_tmd">
             <ul class="ul_tmd">
-                <li><a href="index.html">TRANG CHỦ</a></li>
-                <li><a href="index.html">GIỚI THIỆU</a></li>
-                <li><a href="index.html">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="index.html">LAPTOP GAMING</a></li>
-                <li><a href="index.html">BLOGS</a></li>
-                <li><a href="index.html">LIÊN HỆ</a></li>
+                <li><a href="Trangchu-tmd.php">TRANG CHỦ</a></li>
+                <li><a href="#">GIỚI THIỆU</a></li>
+                <li><a href="Laptop_loaivp_tmd.php">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="Laptop_loaigm_tmd.php">LAPTOP GAMING</a></li>
+                <li><a href="#">BLOGS</a></li>
+                <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
     </header>
@@ -173,10 +177,10 @@ if (isset($_GET['sub_srch_tmd'])) {
     </div>
     <div class="banner_xh_tmd">
         <div class="xuhuong_gm_tmd">
-            <img style="width: 90%;" src="Img/xh_gm.jpg" alt="">
+            <img style="width: 90%;" src="../Img/xh_gm.jpg" alt="">
         </div>
         <div class="xuhuong_vp_tmd">
-            <img style="width: 90%;" src="Img/xh_vp.jpg" alt="">
+            <img style="width: 90%;" src="../Img/xh_vp.jpg" alt="">
         </div>
     </div>
     <div id="menu_sp_tmd">
@@ -190,24 +194,24 @@ if (isset($_GET['sub_srch_tmd'])) {
                 <?php
                 if ($result_moi_tmd->num_rows > 0) {
                     while ($row_tmd = $result_moi_tmd->fetch_assoc()) {
-                        if ($row_tmd['LOAISP_TMD'] == 0) {
+                        if ($row_tmd['LOAISP_TMD'] == 0 && $row_tmd['TINHTRANG_TMD'] == 1) {
                             echo '<div class="list_item1_new_tmd">';
-                            echo '<a href="#">';
+                            echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                             echo '<div class="img_new_tmd">';
-                            echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                            echo '<img src="../Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
                             echo '</div>';
                             echo '</a>';
                             echo '<div class="box-item">';
                             echo '<div class="them_gio_tmd">';
-                            echo '<a href="#">';
+                            echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                             echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
-                            echo '</a>';
                             if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
                                 echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
                             } else {
                                 echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
                             }
-                            echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                            echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>';
+                            echo '</a>';
                             echo '</div>';
                             echo '</div>';
                             echo '</div>';
@@ -218,7 +222,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                 <div class="list_item1_new_tmd">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)-N.jpg"
+                            <img src="../Img/Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)-N.jpg"
                                 alt="">
                         </div>
                     </a>
@@ -228,14 +232,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 <p>Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)</p>
                             </a>
                             <span class="money">22.890.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
                 <div class="list_item1_new_tmd" class="2nw">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Acer Nitro 5 AN515-58-56CH (Core i5 - 12500H, 16GB, 512GB, RTX 4050 6GB, 15.6 FHD IPS 144Hz)-N.jpg"
+                            <img src="../Img/Acer Nitro 5 AN515-58-56CH (Core i5 - 12500H, 16GB, 512GB, RTX 4050 6GB, 15.6 FHD IPS 144Hz)-N.jpg"
                                 alt="">
                         </div>
                     </a>
@@ -246,14 +250,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                     144Hz)</p>
                             </a>
                             <span class="money">21.590.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
                 <div class="list_item1_new_tmd" class="3nw">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Acer Nitro 5 AN515-58-57QW (Core i5-12450H, 16GB, 512GB, RTX 3050Ti, 15.6 FHD IPS 144Hz)-N.jpg"
+                            <img src="../Img/Acer Nitro 5 AN515-58-57QW (Core i5-12450H, 16GB, 512GB, RTX 3050Ti, 15.6 FHD IPS 144Hz)-N.jpg"
                                 alt="">
                         </div>
                     </a>
@@ -264,14 +268,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                     144Hz)</p>
                             </a>
                             <span class="money">16.990.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
                 <div class="list_item1_new_tmd" class="4nw">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Lenovo Legion Y9000X IAH7 (Core i7-12700H, 16GB, 512GB, RTX 3060 6GB, 16'' QHD 165Hz)-N.png"
+                            <img src="../Img/Lenovo Legion Y9000X IAH7 (Core i7-12700H, 16GB, 512GB, RTX 3060 6GB, 16'' QHD 165Hz)-N.png"
                                 alt="">
                         </div>
                     </a>
@@ -282,14 +286,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 </p>
                             </a>
                             <span class="money">28.990.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
                 <div class="list_item1_new_tmd" class="5nw">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Lenovo Legion 5 15ACH6H (Ryzen 7-5800H, 16GB, 512GB, RTX 3060, 15.6'' FHD 165Hz).jpg"
+                            <img src="../Img/Lenovo Legion 5 15ACH6H (Ryzen 7-5800H, 16GB, 512GB, RTX 3060, 15.6'' FHD 165Hz).jpg"
                                 alt="">
                         </div>
                     </a>
@@ -299,14 +303,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 <p>Lenovo Legion 5 15ACH6H (Ryzen 7-5800H, 16GB, 512GB, RTX 3060, 15.6'' FHD 165Hz)</p>
                             </a>
                             <span class="money">23.890.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
                 <div class="list_item1_new_tmd" class="6nw">
                     <a href="#">
                         <div class="img_new_tmd">
-                            <img src="Img/Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)-N.jpg"
+                            <img src="../Img/Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)-N.jpg"
                                 alt="">
                         </div>
                     </a>
@@ -316,7 +320,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 <p>Lenovo Slim 7 Pro X (Ryzen 9 6900HS, 32GB, 1TB, RTX 3050 4GB, 14.5'' 3K Touch)</p>
                             </a>
                             <span class="money">22.890.000</span><br>
-                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                            <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
@@ -335,24 +339,24 @@ if (isset($_GET['sub_srch_tmd'])) {
             <?php
             if ($result_pb_tmd->num_rows > 0) {
                 while ($row_tmd = $result_pb_tmd->fetch_assoc()) {
-                    if ($row_tmd['LOAISP_TMD'] == 1) {
+                    if ($row_tmd['LOAISP_TMD'] == 1 && $row_tmd['TINHTRANG_TMD'] == 1) {
                         echo '<div class="list_sp_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<div class="img_sp_tmd">';
-                        echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '<img src="../Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
                         echo '</div>';
                         echo '</a>';
                         echo '<div class="box-item">';
                         echo '<div class="them_gio_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
-                        echo '</a>';
                         if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
                             echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
                         } else {
                             echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
                         }
-                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>';
+                        echo '</a>';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
@@ -363,7 +367,7 @@ if (isset($_GET['sub_srch_tmd'])) {
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -373,14 +377,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz)</p>
                         </a>
                         <span class="money">30.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Lenovo Legion Slim 5 Y7000P IRH8 (Core i7-13700H, 16GB, 1TB, RTX 4060 8GB, 16'' 2K+ 165Hz).jpg"
+                        <img src="../Img/Lenovo Legion Slim 5 Y7000P IRH8 (Core i7-13700H, 16GB, 1TB, RTX 4060 8GB, 16'' 2K+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -391,14 +395,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 165Hz)</p>
                         </a>
                         <span class="money">31.990.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G15 5520 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 15.6 FHD 165Hz).jpg"
+                        <img src="../Img/Dell Gaming G15 5520 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 15.6 FHD 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -408,14 +412,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Dell Gaming G15 5520 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 15.6" FHD 165Hz)</p>
                         </a>
                         <span class="money">24.690.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Acer Predator Helios Neo 2023 PHN16-71-50JG (Core i5-13500HX, 16GB, 512GB, RTX 4050 6GB, 16 FHD+ 165Hz).jpg"
+                        <img src="../Img/Acer Predator Helios Neo 2023 PHN16-71-50JG (Core i5-13500HX, 16GB, 512GB, RTX 4050 6GB, 16 FHD+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -426,14 +430,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 16 FHD+ 165Hz)</p>
                         </a>
                         <span class="money">22.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6'' QHD 240Hz).jpg"
+                        <img src="../Img/Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6'' QHD 240Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -444,14 +448,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 QHD 240Hz)</p>
                         </a>
                         <span class="money">28.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6'' QHD+ 165Hz).jpg"
+                        <img src="../Img/Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6'' QHD+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -462,14 +466,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 QHD+ 165Hz)</p>
                         </a>
                         <span class="money">28.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G16 7620 (Core i7-12700H, 16GB, 512GB, RTX 3060 6GB, 16 QHD+ 165Hz IPS).jpg"
+                        <img src="../Img/Dell Gaming G16 7620 (Core i7-12700H, 16GB, 512GB, RTX 3060 6GB, 16 QHD+ 165Hz IPS).jpg"
                             alt="">
                     </div>
                 </a>
@@ -479,14 +483,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Dell Gaming G16 7620 (Core i7-12700H, 16GB, 512GB, RTX 3060 6GB, 16 QHD+ 165Hz IPS)</p>
                         </a>
                         <span class="money">26.990.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti, 15.6'' FHD IPS 144Hz).jpg"
+                        <img src="../Img/Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti, 15.6'' FHD IPS 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -497,14 +501,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 15.6'' FHD IPS 144Hz)</p>
                         </a>
                         <span class="money">15.990.000 </span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
+                        <img src="../Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
                             alt="">
                     </div>
                 </a>
@@ -515,14 +519,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 120Hz)</p>
                         </a>
                         <span class="money">21.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz).jpg"
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -533,7 +537,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                             </p>
                         </a>
                         <span class="money">29.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
@@ -544,24 +548,24 @@ if (isset($_GET['sub_srch_tmd'])) {
             <?php
             if ($result_km_tmd->num_rows > 0) {
                 while ($row_tmd = $result_km_tmd->fetch_assoc()) {
-                    if ($row_tmd['LOAISP_TMD'] == 2) {
+                    if ($row_tmd['LOAISP_TMD'] == 2 && $row_tmd['TINHTRANG_TMD'] == 1) {
                         echo '<div class="list_sp_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<div class="img_sp_tmd">';
-                        echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '<img src="../Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
                         echo '</div>';
                         echo '</a>';
                         echo '<div class="box-item">';
                         echo '<div class="them_gio_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
-                        echo '</a>';
                         if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
                             echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
                         } else {
                             echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
                         }
-                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>';
+                        echo '</a>';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
@@ -572,7 +576,7 @@ if (isset($_GET['sub_srch_tmd'])) {
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -582,14 +586,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz)</p>
                         </a>
                         <span class="money">30.590.000<del style="color:#333">30.890.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Acer Predator Helios Neo 2023 PHN16-71-73LT (Core i7-13700HX, 16GB, 1TB, RTX 4060 8GB, 16 WQXGA 165Hz)-km.jpg"
+                        <img src="../Img/Acer Predator Helios Neo 2023 PHN16-71-73LT (Core i7-13700HX, 16GB, 1TB, RTX 4060 8GB, 16 WQXGA 165Hz)-km.jpg"
                             alt="">
                     </div>
                 </a>
@@ -600,14 +604,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 WQXGA 165Hz)</p>
                         </a>
                         <span class="money">28.890.000<del style="color:#333">35.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6 FHD 144Hz)-km.jpg"
+                        <img src="../Img/MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6 FHD 144Hz)-km.jpg"
                             alt="">
                     </div>
                 </a>
@@ -617,14 +621,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6" FHD 144Hz)</p>
                         </a>
                         <span class="money">16.790.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Acer Nitro 5 AN515-55-50V2 (Core i5-10300H, 16GB, 512GB, GTX1650Ti 4GB DDR6, 15.6' FHD 144Hz)-km.jpg"
+                        <img src="../Img/Acer Nitro 5 AN515-55-50V2 (Core i5-10300H, 16GB, 512GB, GTX1650Ti 4GB DDR6, 15.6' FHD 144Hz)-km.jpg"
                             alt="">
                     </div>
                 </a>
@@ -635,14 +639,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 144Hz)</p>
                         </a>
                         <span class="money">13.890.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Gigabyte G5 MF-E3VN313SH-km.png" alt="">
+                        <img src="../Img/Gigabyte G5 MF-E3VN313SH-km.png" alt="">
                     </div>
                 </a>
                 <div class="box-item">
@@ -651,14 +655,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Gigabyte G5 MF-E3VN313SH (Core i5-12500H, 16GB, 512GB, RTX 4060 8GB, 15.6" FHD 144Hz)</p>
                         </a>
                         <span class="money">25.990.000<del style="color:#333">31.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
+                        <img src="../Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
                             alt="">
                     </div>
                 </a>
@@ -668,14 +672,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, RTX 3060 6GB, 15.6'' FHD 165Hz)</p>
                         </a>
                         <span class="money">23.890.000<del style="color:#333">29.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
+                        <img src="../Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -686,14 +690,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 144Hz)</p>
                         </a>
                         <span class="money">16.890.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz).jpg"
+                        <img src="../Img/Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -704,14 +708,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             </p>
                         </a>
                         <span class="money">17.890.000<del style="color:#333">22.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus ROG Strix G15 2022 G513RC (Ryzen 7-6800HS, 8GB, 512GB, RTX 3050, 15.6'' FHD 144Hz).png"
+                        <img src="../Img/Asus ROG Strix G15 2022 G513RC (Ryzen 7-6800HS, 8GB, 512GB, RTX 3050, 15.6'' FHD 144Hz).png"
                             alt="">
                     </div>
                 </a>
@@ -722,14 +726,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             </p>
                         </a>
                         <span class="money">25.890.000<del style="color:#333">25.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G15 5530 2023 (Core i7-13650HX, 8GB, 1TB, RTX 4050 6GB, 15.6'' FHD 120Hz).jpg"
+                        <img src="../Img/Dell Gaming G15 5530 2023 (Core i7-13650HX, 8GB, 1TB, RTX 4050 6GB, 15.6'' FHD 120Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -739,7 +743,7 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Dell Gaming G15 5530 2023 (Core i7-13650HX, 8GB, 1TB, RTX 4050 6GB, 15.6'' FHD 120Hz)</p>
                         </a>
                         <span class="money">24.990.000<del style="color:#333">29.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
@@ -750,24 +754,24 @@ if (isset($_GET['sub_srch_tmd'])) {
             <?php
             if ($result_bc_tmd->num_rows > 0) {
                 while ($row_tmd = $result_bc_tmd->fetch_assoc()) {
-                    if ($row_tmd['LOAISP_TMD'] == 3) {
+                    if ($row_tmd['LOAISP_TMD'] == 3 && $row_tmd['TINHTRANG_TMD'] == 1) {
                         echo '<div class="list_sp_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<div class="img_sp_tmd">';
-                        echo '<img src="Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
+                        echo '<img src="../Img/' . $row_tmd['IMG_TMD'] . '" alt="">';
                         echo '</div>';
                         echo '</a>';
                         echo '<div class="box-item">';
                         echo '<div class="them_gio_tmd">';
-                        echo '<a href="#">';
+                        echo '<a href="chi_tiet_sp_tmd.php?spid=' . $row_tmd["SPID_TMD"] . '">';
                         echo '<p>' . $row_tmd['TENSP_TMD'] . '</p>';
-                        echo '</a>';
-                        if ($row_tmd['GIAMGIA_TMD'] == 'Có') {
+                        if ($row_tmd['GIAMGIA_TMD'] == 1) {
                             echo '<span class="money">' . $row_tmd['GIAGIAM_TMD'] . '<del style="color:#333">' . $row_tmd['GIAGOC_TMD'] . '</del></span><br>';
                         } else {
                             echo '<span class="money">' . $row_tmd['GIAGOC_TMD'] . '</span><br>';
                         }
-                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>';
+                        echo '<button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>';
+                        echo '</a>';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
@@ -778,7 +782,7 @@ if (isset($_GET['sub_srch_tmd'])) {
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -788,14 +792,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>ASUS ROG Zephyrus M16 GU603ZM (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 2K+ 165Hz)</p>
                         </a>
                         <span class="money">30.590.000<del style="color:#333">30.890.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti, 15.6'' FHD IPS 144Hz).jpg"
+                        <img src="../Img/Laptop Gaming Acer Nitro 5 2021 AN515-57-5700 (Core i5 - 11400H, 16GB, 512GB, RTX3050Ti, 15.6'' FHD IPS 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -806,14 +810,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 15.6'' FHD IPS 144Hz)</p>
                         </a>
                         <span class="money">15.990.000 </span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz).jpg"
+                        <img src="../Img/Asus ROG Strix G15 G513IH-HN015W (Ryzen 7-4800H, 8GB, 512GB, GTX 1650, 15.6'' FHD 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -824,14 +828,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             </p>
                         </a>
                         <span class="money">17.890.000<del style="color:#333">22.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
+                        <img src="../Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -842,14 +846,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 144Hz)</p>
                         </a>
                         <span class="money">16.890.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6 FHD 144Hz)-km.jpg"
+                        <img src="../Img/MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6 FHD 144Hz)-km.jpg"
                             alt="">
                     </div>
                 </a>
@@ -859,14 +863,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>MSI Thin GF63 12UCX 841VN (Core i5-12450H, 8GB, 512GB, RTX 2050 4GB, 15.6" FHD 144Hz)</p>
                         </a>
                         <span class="money">16.790.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6'' QHD+ 165Hz).jpg"
+                        <img src="../Img/Asus ROG Zephyrus G15 GA503RM 2022 (Ryzen 9-6900HS, 16GB, 512GB, RTX 3060 6GB, 15.6'' QHD+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -877,14 +881,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 QHD+ 165Hz)</p>
                         </a>
                         <span class="money">28.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6'' QHD 240Hz).jpg"
+                        <img src="../Img/Acer Predator Helios 300 PH315-55-795C (Core i7-12700H, 16GB, 1TB, RTX 3070Ti 8GB, 15.6'' QHD 240Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -895,14 +899,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 QHD 240Hz)</p>
                         </a>
                         <span class="money">28.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
+                        <img src="../Img/Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, NVIDIA RTX 3050Ti 4GB, 15.6'' FHD 120Hz).png"
                             alt="">
                     </div>
                 </a>
@@ -912,14 +916,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                             <p>Dell Gaming G15 5525 (Ryzen 7-6800H, 16GB, 512GB, RTX 3060 6GB, 15.6'' FHD 165Hz)</p>
                         </a>
                         <span class="money">23.890.000<del style="color:#333">29.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
+                        <img src="../Img/Asus TUF Gaming F15 FX506HF-HN014W (Core i5-11400H, 8GB, 512GB, RTX 2050, 15.6″ FHD 144Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -930,14 +934,14 @@ if (isset($_GET['sub_srch_tmd'])) {
                                 144Hz)</p>
                         </a>
                         <span class="money">16.890.000<del style="color:#333">19.990.000</del></span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
             <div class="list_sp_tmd">
                 <a href="#">
                     <div class="img_sp_tmd">
-                        <img src="Img/ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz).jpg"
+                        <img src="../Img/ASUS ROG Zephyrus M16 GU603ZM 2022 (Core i7-12700H, 16GB, 512GB, RTX 3060, 16 FHD+ 165Hz).jpg"
                             alt="">
                     </div>
                 </a>
@@ -948,16 +952,38 @@ if (isset($_GET['sub_srch_tmd'])) {
                             </p>
                         </a>
                         <span class="money">29.890.000</span><br>
-                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Thêm vào giỏ</button>
+                        <button class="them_gio_btn_tmd" name="add_gio_tmd" type="button">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="news">
+        <?php
+        $sql_select_new_tmd = "SELECT * FROM NEWS WHERE 1=1";
+        $result_new_tmd = $conn_tmd->query($sql_select_new_tmd);
+
+        if ($result_new_tmd->num_rows > 0) {
+            while ($row_tmd = $result_new_tmd->fetch_assoc()) {
+                if ($row_tmd['HIENTHI'] == 1) {
+                    echo '
+                        <div class="son_news_tmd">
+                            <a href="#">
+                                <img src="../Img/' . $row_tmd['IMG'] . '" alt="">
+                                <div class="box-text_tmd">
+                                    <h3>' . $row_tmd['TITLE'] . '</h3>
+                                    <p>' . $row_tmd['CHITIETNEW	'] . '</p>
+                                </div>
+                            </a>
+                        </div>
+                    ';
+                }
+            }
+        }
+        ?>
         <div class="son_news_tmd">
             <a href="#">
-                <img src="Img/new-1.jpg" alt="">
+                <img src="../Img/new-1.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Laptop Dell i3 giá chỉ từ 10.69 triệu, số lượng có hạn, chỉ còn duy nhất hôm nay</h3>
                     <p>Loa loa loa biết tin gì chưa bạn ơi. Ưu đãi dành cho laptop Dell i3 số lượng có hạn tại ANK Dark
@@ -967,7 +993,7 @@ if (isset($_GET['sub_srch_tmd'])) {
         </div>
         <div class="son_news_tmd">
             <a href="#">
-                <img src="Img/new-2.jpg" alt="">
+                <img src="../Img/new-2.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Laptop Lenovo phục vụ học tập - văn phòng giá chỉ từ 7.99 triệu</h3>
                     <p>Tham gia sự kiện miễn phí mà còn có cơ hội rinh nhiều phần quà hấp dẫn bạn có tin? Thật đó nha!
@@ -977,7 +1003,7 @@ if (isset($_GET['sub_srch_tmd'])) {
         </div>
         <div class="son_news_tmd">
             <a href="#">
-                <img src="Img/new-3.jpg" alt="">
+                <img src="../Img/new-3.jpg" alt="">
                 <div class="box-text_tmd">
                     <h3>Công nghệ màn hình laptop Retina của Apple</h3>
                     <p>Đối với công nghệ màn hình thiết bị điện tử của Apple thì đây là 1 thương hiệu hàng đầu trong
@@ -1085,12 +1111,12 @@ if (isset($_GET['sub_srch_tmd'])) {
         <div class="lien_ket_tmd">
             <h3>LIÊN KẾT</h3>
             <ul class="lk_ul_tmd">
-                <li><a href="index.html">TRANG CHỦ</a></li>
-                <li><a href="index.html">GIỚI THIỆU</a></li>
-                <li><a href="index.html">LAPTOP VĂN PHÒNG</a></li>
-                <li><a href="index.html">LAPTOP GAMING</a></li>
-                <li><a href="index.html">BLOGS</a></li>
-                <li><a href="index.html">LIÊN HỆ</a></li>
+                <li><a href="#">TRANG CHỦ</a></li>
+                <li><a href="#">GIỚI THIỆU</a></li>
+                <li><a href="#">LAPTOP VĂN PHÒNG</a></li>
+                <li><a href="#">LAPTOP GAMING</a></li>
+                <li><a href="#">BLOGS</a></li>
+                <li><a href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="ho_tro_tmd">
@@ -1107,7 +1133,7 @@ if (isset($_GET['sub_srch_tmd'])) {
     <div id="ban_quyen_tmd">
         <div class="container_tmd">
             <p>© Bản quyền thuộc về ANK Dark. <strong>Thiết kế website</strong></p>
-            <img src="Img/img-payment.png" alt="">
+            <img src="../Img/img-payment.png" alt="">
         </div>
     </div>
 </body>

@@ -1,39 +1,68 @@
 <?php
 session_start();
-include('../BackendPHP/ket-noi-tmd.php');
 if (!isset($_SESSION['giohang']))
     $_SESSION['giohang'] = [];
-
+if (isset($_GET['delid']) && ($_GET['delid'] >= 0)) {
+    array_splice($_SESSION['giohang'], $_GET['delid'], 1);
+}
+$tong = 0;
 if (isset($_POST['btncart']) && ($_POST['btncart'])) {
+    $anh = $_POST['anh'];
+    $tensp = $_POST['tensp'];
     $SPID_TMD = $_POST['spid'];
-    $sql_cart_tmd = "SELECT * FROM SANPHAM_TMD WHERE SPID_TMD = '$SPID_TMD'";
-    $res_cart_tmd = $conn_tmd->query($sql_cart_tmd);
-    $row = $res_cart_tmd->fetch_array();
-    $IMG_TMD = $row['IMG_TMD'];
-    $TENSP_TMD = $row['TENSP_TMD'];
-    $GIAMGIA_TMD = $row['GIAMGIA_TMD'];
+    $GIAMGIA_TMD = $_POST['giamgia'];
     if ($GIAMGIA_TMD == 1) {
-        $GIASP_TMD = $row['GIADAGIAM_TMD'];
+        $GIABAN_TMD = $_POST['giadagiam'];
     } else {
-        $GIASP_TMD = $row['GIABAN_TMD'];
+        $GIABAN_TMD = $_POST['giaban'];
     }
-    $SOLUONG_TMD = $_POST['quantity'];
-    $TONG = $SOLUONG_TMD * $GIASP_TMD;
+    $soluong = $_POST['soluong'];
     $fl = 0;
     for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-        if ($SESSION['giohang'][$i][1] == $TENSP_TMD) {
+
+        if ($_SESSION['giohang'][$i][1] == $tensp) {
             $fl = 1;
-            $SOLUONGNW_TMD = $SOLUONG_TMD + $_SESSION['giohang'][$i][3];
-            $_SESSION['giohang'][$i][3] = $SOLUONGNW_TMD;
+            $soluongnew = $soluong + $_SESSION['giohang'][$i][3];
+            $_SESSION['giohang'][$i][3] = $soluongnew;
             break;
         }
     }
-
     if ($fl == 0) {
-        $sp = [$IMG_TMD, $TENSP_TMD, $GIASP_TMD, $SOLUONG_TMD, $TONG];
+        $sp = [$anh, $tensp, $GIABAN_TMD, $soluong, $SPID_TMD];
         $_SESSION['giohang'][] = $sp;
     }
-    var_dump($_SESSION['giohang'][]);
+    header('Location:cart_products_tmd.php');
+}
+
+function showgiohang()
+{
+    if (isset($_SESSION['giohang']) && is_array($_SESSION['giohang'])) {
+        if (sizeof($_SESSION['giohang']) > 0) {
+            global $tong;
+            for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
+                $tt = $_SESSION['giohang'][$i][2] * $_SESSION['giohang'][$i][3];
+                $tong += $tt;
+                echo '<tr>
+                        <td><a style="line-height: 1; font-size: 20px; text-decoration: none; color: #000; font-weight: bold;" href="cart_products_tmd.php?delid=' . $i . '">X</a> <img width="75px" height="100px" src="../Img/' . $_SESSION['giohang'][$i][0] . '" alt=""></td>
+                        <td class="product_name">' . $_SESSION['giohang'][$i][1] . '</td>
+                        <td class="product_price">' . $_SESSION['giohang'][$i][2] . '</td>
+                        <td>
+                            <div class="buttons_added">
+                                <input type="button" value="-" class="minus button" onclick="decrement()">
+                                <label class="screen-reader-text" for="quantity_ip"></label>
+                                <input type="number" id="quantity_ip" class="input-text qty text" step="1" min="1"
+                                    max="9999" name="soluong" value="' . $_SESSION['giohang'][$i][3] . '" size="4" pattern="[0-9]*" inputmode="numeric"
+                                    aria-labelledby="">
+                                <input type="button" value="+" class="plus button" onclick="increment()">
+                            </div>
+                        </td>
+                        <td class="product_tong">' . $tt . '</td>
+                    </tr>';
+            }
+        } else {
+            echo "<td colspan='5' style='text-align: center;'>Giỏ hàng rỗng</td>";
+        }
+    }
 }
 ?>
 
@@ -98,13 +127,15 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
                 </div>
                 </form>
                 <div class="menu_tmd">
-                    <a class="menu_link_tmd" href="#" title="Giỏ hàng">
+                    <a class="menu_link_tmd" href="cart_products_tmd.php" title="Giỏ hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                             class="bi bi-basket2-fill" viewBox="0 0 16 16">
                             <path
                                 d="M5.929 1.757a.5.5 0 1 0-.858-.514L2.217 6H.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h.623l1.844 6.456A.75.75 0 0 0 3.69 15h8.622a.75.75 0 0 0 .722-.544L14.877 8h.623a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1.717L10.93 1.243a.5.5 0 1 0-.858.514L12.617 6H3.383L5.93 1.757zM4 10a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm3 0a1 1 0 0 1 2 0v2a1 1 0 1 1-2 0v-2zm4-1a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1z" />
                         </svg>
-                        <span id="cartCount">0</span>
+                        <span id="cartCount">
+                            <?php echo count($_SESSION['giohang']); ?>
+                        </span>
                     </a>
                     <a class="menu_link_tmd" href="tracuu_tmd.php" title="Tra cứu đơn hàng">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -158,56 +189,101 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
     </header>
     <div class="product_container_tmd">
         <div class="product_main_tmd">
-            <?php
-            if (isset($_SESSION['giohang']) && (is_array($_SESSION['giohang']))) {
-                $TONGALL = 0;
-                for ($i = 0; $i < sizeof($_SESSION['giohang']); $i++) {
-                    ?>
-                    <div class="content-area page-wrapper">
-                        <div class="row">
-                            <div class="large-12 col">
-                                <div class="cover">
-                                    <div class="prd1">
-                                        <form action="">
-                                            <div>
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>XÓA</th>
-                                                            <th>ẢNH</th>
-                                                            <th>SẢN PHẨM</th>
-                                                            <th>GIÁ</th>
-                                                            <th>SỐ LƯỢNG</th>
-                                                            <th>TỔNG</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <td><a href="cart_products_tmd.php?delcart=<?php $i; ?>"></a></td>
-                                                        <td><img src="../Img/<?php $_SESSION['giohang'][$i][0] ?>" alt=""></td>
-                                                        <td><?php $_SESSION['giohang'][$i][1] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][2] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][3] ?></td>
-                                                        <td><?php $_SESSION['giohang'][$i][4] ?></td>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+            <div id="menu_sp_tmd" class="row mb-0">
+                <div class="col">
+                    <form action="">
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="product_name">SẢN PHẨM</th>
+                                        <th style="width: 100px;"></th>
+                                        <th class="product_price">GIÁ</th>
+                                        <th class="product_sl">SỐ LƯỢNG</th>
+                                        <th class="product_tong">TỔNG</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php showgiohang(); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="col cart-collaterals">
+                    <div class="cart-sidebar col-inner ">
+                        <div class="cart_totals">
+                            <form action="../BackendPHP/xuly_donhang_tmd.php" method="post">
+                                <table cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th class="th_cart" colspan="2"
+                                                style="font-size: 26px; border-width:3px; width: 460px;">Tổng số lượng
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <table class="dathang" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Tổng phụ</th>
+                                            <td>
+                                                <?php echo $tong; ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Giao hàng</th>
+                                            <td><select class="address" name="calc_shipping_provinces" required="">
+                                                    <option value="">Tỉnh / Thành phố</option>
+                                                </select>
+                                                <select class="address" name="calc_shipping_district" required="">
+                                                    <option value="">Quận / Huyện</option>
+                                                </select>
+                                                <input class="billing_address_1" name="tinh_donhang_tmd" type="hidden" value="">
+                                                <input class="billing_address_2" name="huyen_donhang_tmd" type="hidden" value="">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phí ship</th>
+                                            <td>
+                                                Phí ship mặc định trong nước là: <span style="color: #BF3131;">23000
+                                                    VNĐ</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tổng cần thanh toán</th>
+                                            <td style="font-weight: bold; color: #265073;">
+                                                <?php echo $tong * 23000; ?> VNĐ
+                                                <input type="hidden" name="tongtien" value="<?php echo $tong * 23000; ?>">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Thanh toán</th>
+                                            <td>
+                                                <input type="radio" id="payment_cash" name="payment_method" value="0" required>
+                                                <label for="payment_cash">Thanh toán khi nhận hàng</label>
+
+                                                <input type="radio" id="payment_bank" value="1" name="payment_method"
+                                                    onclick="hide_nganhang()" required>
+                                                <label for="payment_bank">Thanh toán qua ngân hàng</label>
+                                            </td>
+                                        </tr>
+                                        <tr id="bankInfo" style="opacity: 0;">
+                                            <th>Ngân Hàng</th>
+                                            <td>
+                                                MBBANK: <span style="color: #BF3131;">0855312279</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <input type="submit" name="btn_sub_mua" class="btn_sub_mua" value="TIẾN HÀNH THANH TOÁN">
+                            </form>
                         </div>
                     </div>
-
-
-
-
-                    <?php
-                }
-            }
-            ?>
+                </div>
+            </div>
         </div>
     </div>
-
     <div class="information">
         <h1>ĐĂNG KÝ NHẬN THÔNG TIN</h1>
         <div class="dang_ky_tmd">
@@ -332,8 +408,103 @@ if (isset($_POST['btncart']) && ($_POST['btncart'])) {
         </div>
     </div>
 </body>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/vietblogdao/js/districts.min.js'></script>
+<script>
+    $(document).ready(function () {
+        // Kiểm tra và thiết lập giá trị cho Quận/Huyện nếu đã lưu trước đó
+        var address_2 = localStorage.getItem('address_2_saved');
+        if (address_2) {
+            $('select[name="calc_shipping_district"] option').each(function () {
+                if ($(this).text() == address_2) {
+                    $(this).attr('selected', '');
+                }
+            });
+            $('input.billing_address_2').val(address_2);
+        }
 
-</html>
-</body>
+        // Kiểm tra và thiết lập giá trị cho Quận/Huyện nếu đã lưu trước đó
+        var district = localStorage.getItem('district');
+        if (district) {
+            $('select[name="calc_shipping_district"]').html(district);
+            $('select[name="calc_shipping_district"]').on('change', function () {
+                var target = $(this).children('option:selected');
+                target.attr('selected', '');
+                $('select[name="calc_shipping_district"] option').not(target).removeAttr('selected');
+                address_2 = target.text();
+                $('input.billing_address_2').val(address_2);
+                district = $('select[name="calc_shipping_district"]').html();
+                localStorage.setItem('district', district);
+                localStorage.setItem('address_2_saved', address_2);
+            });
+        }
+
+        // Xử lý sự kiện khi thay đổi Tỉnh/Thành phố
+        $('select[name="calc_shipping_provinces"]').each(function () {
+            var $this = $(this),
+                stc = '';
+
+            c.forEach(function (i, e) {
+                e += 1;
+                stc += '<option value=' + e + '>' + i + '</option>';
+                $this.html('<option value="">Tỉnh / Thành phố</option>' + stc);
+
+                if (address_1 = localStorage.getItem('address_1_saved')) {
+                    $('select[name="calc_shipping_provinces"] option').each(function () {
+                        if ($(this).text() == address_1) {
+                            $(this).attr('selected', '');
+                        }
+                    });
+                    $('input.billing_address_1').val(address_1);
+                }
+
+                $this.on('change', function (i) {
+                    i = $this.children('option:selected').index() - 1;
+                    var str = '',
+                        r = $this.val();
+
+                    if (r != '') {
+                        arr[i].forEach(function (el) {
+                            str += '<option value="' + el + '">' + el + '</option>';
+                            $('select[name="calc_shipping_district"]').html('<option value="">Quận / Huyện</option>' + str);
+                        });
+
+                        var address_1 = $this.children('option:selected').text();
+                        var district = $('select[name="calc_shipping_district"]').html();
+                        localStorage.setItem('address_1_saved', address_1);
+                        localStorage.setItem('district', district);
+
+                        // Xử lý sự kiện khi thay đổi Quận/Huyện
+                        $('select[name="calc_shipping_district"]').on('change', function () {
+                            var target = $(this).children('option:selected');
+                            target.attr('selected', '');
+                            $('select[name="calc_shipping_district"] option').not(target).removeAttr('selected');
+                            var address_2 = target.text();
+                            $('input.billing_address_2').val(address_2);
+                            district = $('select[name="calc_shipping_district"]').html();
+                            localStorage.setItem('district', district);
+                            localStorage.setItem('address_2_saved', address_2);
+                        });
+                    } else {
+                        $('select[name="calc_shipping_district"]').html('<option value="">Quận / Huyện</option>');
+                        district = $('select[name="calc_shipping_district"]').html();
+                        localStorage.setItem('district', district);
+                        localStorage.removeItem('address_1_saved', address_1);
+                    }
+                });
+            });
+        });
+    });
+    function hide_nganhang() {
+        var bankInfo = document.getElementById("bankInfo");
+        var paymentBank = document.getElementById("payment_bank");
+
+        if (!paymentBank.checked) {
+            bankInfo.style.opacity = 0;
+        } else {
+            bankInfo.style.opacity = 1;
+        }
+    }
+</script>
 
 </html>
